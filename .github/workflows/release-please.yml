@@ -37,21 +37,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Print tag0
-        run: echo "tag=${{ needs.release-please.outputs.tag_name }}"
+        run: echo "tag0=${{ needs.release-please.outputs.tag_name }}"
       - name: Print tag1
         run: |
           TAG=$(echo "${{ needs.release-please.outputs.tag_name }}" | cut -c 2-)
           echo "tag1=$TAG"
-      - name: Print tag2
-        run: echo "tag=${{ steps.get_tag.outputs.VERSION }}"
-      - name: Print tag3
-        run: |
-          TAG=$(echo "${{ steps.get_tag.outputs.VERSION }}" | sed 's/v\([0-9.]*\).*/\1/')
-          echo "tag3=$TAG"
       - name: Get version tag
         id: get_tag
         # needs.release-please.outputs.tag_name = v1.0.0
         run: echo "VERSION=$(echo "${{ needs.release-please.outputs.tag_name }}" | cut -c 2-)" >> $GITHUB_OUTPUT
+      - name: Print tag2
+        run: echo "tag2=${{ steps.get_tag.outputs.VERSION }}"
+      - name: Print tag3
+        run: |
+          TAG=$(echo "${{ steps.get_tag.outputs.VERSION }}" | sed 's/v\([0-9.]*\).*/\1/')
+          echo "tag3=$TAG"
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
