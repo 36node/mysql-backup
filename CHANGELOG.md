@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/36node/mysql-backup/compare/v1.0.4...v1.0.5) (2025-08-01)
+
+
+### Bug Fixes
+
+* ci ([10bd00a](https://github.com/36node/mysql-backup/commit/10bd00a1aee2de17b1e3b8a798bc394597ed566b))
+
 ## [1.0.4](https://github.com/36node/mysql-backup/compare/v1.0.3...v1.0.4) (2025-08-01)
 
 
