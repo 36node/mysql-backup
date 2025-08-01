@@ -24,7 +24,7 @@
 
 ```shell
 # 使用文件备份
-MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 BACKUP_PATH=./backup FILE_PREFIX=tmp python docker/backup.py
+MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD="123456" BACKUP_PATH=./backup FILE_PREFIX=tmp python docker/backup.py
 # 启用 s3 备份
 MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 BACKUP_PATH=./backup FILE_PREFIX=tmp S3_ENABLE=true S3_EP="https://minio-api.36node.com" S3_ACCESS_KEY="xxxx" S3_ACCESS_SECRET="xxxx" S3_BUCKET="test" S3_PREFIX="prefix" python docker/backup.py
 
@@ -38,20 +38,20 @@ MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 RESTORE_FROM_S3=1 S3_EP="h
 
 ```shell
 # 使用文件备份
-MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 BACKUP_PATH=./backup python docker/backup.py
+MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 MYSQL_DB=test BACKUP_PATH=./backup python docker/backup.py
 # 启用 s3 备份
-MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 BACKUP_PATH=./backup FILE_PREFIX=tmp S3_ENABLE=1 S3_EP="https://minio-api.36node.com" S3_ACCESS_KEY="xxxx" S3_ACCESS_SECRET="xxxx" S3_BUCKET="test" S3_PREFIX="prefix" python docker/backup.py
+MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 MYSQL_DB=test BACKUP_PATH=./backup FILE_PREFIX=tmp S3_ENABLE=1 S3_EP="https://minio-api.36node.com" S3_ACCESS_KEY="xxxx" S3_ACCESS_SECRET="xxxx" S3_BUCKET="test" S3_PREFIX="prefix" python docker/backup.py
 
 # 使用文件恢复
-MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 BACKUP_PATH=./backup python docker/restore.py
+MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 MYSQL_DB=test BACKUP_PATH=./backup python docker/restore.py
 # 使用 s3 恢复
-MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 RESTORE_FROM_S3=1 S3_EP="https://minio-api.36node.com" S3_ACCESS_KEY="xxxx" S3_ACCESS_SECRET="xxxx" S3_BUCKET="test" S3_PREFIX="prefix" python docker/restore.py
+MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 MYSQL_DB=test RESTORE_FROM_S3=1 S3_EP="https://minio-api.36node.com" S3_ACCESS_KEY="xxxx" S3_ACCESS_SECRET="xxxx" S3_BUCKET="test" S3_PREFIX="prefix" python docker/restore.py
 ```
 
 备份时忽略某些集合
 
 ```shell
-MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 MYSQL_EXCLUDE_TABLES=table1,table2 BACKUP_PATH=./backup python docker/backup.py
+MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PWD=123456 MYSQL_DB=test MYSQL_EXCLUDE_TABLES=table1,table2 BACKUP_PATH=./backup python docker/backup.py
 ```
 
 ### 使用 docker
@@ -106,7 +106,9 @@ restore:
   nodeSelector:
     kubernetes.io/hostname: "worker-1"
   env:
-    MONGO_URI: "mysql://localhost:27017"
+    MYSQL_HOST: 127.0.0.1
+    MYSQL_USER: root
+    MYSQL_PWD: 123456
 ```
 
 恢复
@@ -173,7 +175,7 @@ S3 支持使用虚拟域名作为 endpoint，即可以将 region 或者 bucket �
 - MYSQL_USER
 - MYSQL_PWD
 - MYSQL_PORT
-- MYSQL_DBS
+- MYSQL_DB: 选填，待恢复数据库，仅支持一个，例如 test1，若为空表示不指定恢复的数据库
 - MONGO_FILE_PREFIX
 - BACKUP_PWD
 
@@ -191,14 +193,14 @@ S3 支持使用虚拟域名作为 endpoint，即可以将 region 或者 bucket �
 
 ```shell
 # mysqldump
-mysqldump --uri="mysql://localhost:27017" --db=test --collection=test --gzip --archive="/backup/test-test-test-backup-202400101000000.tar.gz" --authenticationDatabase=admin
+mysqldump -h 127.0.0.1 -P 3306 -u root -p"123456" test > ./backup/tmp-test-202400101000000.sql
 
 # mysql
-mysql --uri="mysql://localhost:27017" --gzip --archive="/backup/test-test-test-backup-202400101000000.tar.gz" --authenticationDatabase=admin
+mysql -h 127.0.0.1 -P 3306 -u root -p"123456" test < ./backup/tmp-test-202400101000000.sql
 
 # zip
-zip -e test.tar.gz.zip -P 123456 test.tar.gz
-unzip -P 123456 test.tar.gz.zip
+zip -e test.sql.zip -P 123456 test.sql
+unzip -P 123456 test.sql.zip
 
 # docker
 docker build -t exmaple/mysql-backup:main .

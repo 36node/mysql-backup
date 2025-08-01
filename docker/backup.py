@@ -116,13 +116,18 @@ def calculate_file_prefix(dbs=None, tables=None, exclude_tables=None, file_prefi
 
     # 在db存在的基础上构造前缀
     if dbs:
-        final_prefix += f"-{"__".join(dbs)}"
+        final_prefix += f"-{'__'.join(dbs)}"
 
         # 在db存在的情况下构造前缀
         if tables:
-            final_prefix += f"-{"__".join(tables)}"
+            final_prefix += f"-{'__'.join(tables)}"
         elif exclude_tables:
-            final_prefix += f"-exclude-{"__".join(exclude_tables)}"
+            final_prefix += f"-exclude-{'__'.join(exclude_tables)}"
+
+    if final_prefix:
+        # 如果前缀不为空，确保以'-'结尾
+        if not final_prefix.endswith("-"):
+            final_prefix += "-"
 
     return final_prefix
 
@@ -165,7 +170,7 @@ def backup_file(prefix):
             option = f"{db} {' '.join(mysql_tables)}"
         elif mysql_exclude_tables:
             # 备份单个数据库下的所有表，排除指定表 mysqldump -h 127.0.0.1 -u root -p"123456" test --ignore-table=test.table1 --ignore-table=test.table2
-            option = f"{db} {' '.join(f"--ignore-table={db}.{table}" for table in mysql_exclude_tables)}"
+            option = f"{db} {' '.join(f'--ignore-table={db}.{table}' for table in mysql_exclude_tables)}"
         else:
             # 无其他内容 mysqldump -h 127.0.0.1 -u root -p"123456" test
             option = f"{db}"

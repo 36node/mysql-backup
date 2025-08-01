@@ -16,7 +16,7 @@ DEFAULT_S3_PREFIX = ""
 must_inputs = ["MYSQL_HOST", "MYSQL_USER", "MYSQL_PWD"]
 other_inputs = [
     "MYSQL_PORT",
-    "MYSQL_DBS",
+    "MYSQL_DB",
     "FILE_PREFIX",
     "BACKUP_PATH",
     "BACKUP_PWD",
@@ -56,7 +56,7 @@ mysql_pwd = os.environ["MYSQL_PWD"]
 
 # 选填
 mysql_port = os.environ["MYSQL_PORT"] if check_var("MYSQL_PORT") else DEFAULT_MYSQL_PORT
-mysql_dbs = os.environ["MYSQL_DBS"].split(",") if check_var("MYSQL_DBS") else None
+mysql_db = os.environ["MYSQL_DB"] if check_var("MYSQL_DB") else None
 backup_path = (
     os.environ["BACKUP_PATH"] if check_var("BACKUP_PATH") else DEFAULT_BACKUP_PATH
 )
@@ -130,8 +130,8 @@ def restore_file(file_path):
 
     # 恢复数据
     cmd = f'mysql -h {mysql_host} -P {mysql_port} -u {mysql_user} -p"{mysql_pwd}" < {restore_path}'
-    if mysql_dbs and len(mysql_dbs) == 1:
-        cmd = f'mysql -h {mysql_host} -P {mysql_port} -u {mysql_user} -p"{mysql_pwd}" {mysql_dbs[0]} < {restore_path}'
+    if mysql_db:
+        cmd = f'mysql -h {mysql_host} -P {mysql_port} -u {mysql_user} -p"{mysql_pwd}" {mysql_db} < {restore_path}'
 
     subprocess.call(cmd, shell=True)
 
