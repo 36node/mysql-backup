@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/36node/mysql-backup/compare/v1.0.2...v1.0.3) (2025-08-01)
+
+
+### Bug Fixes
+
+* dockerfile ([9f9d41c](https://github.com/36node/mysql-backup/commit/9f9d41cefa7fe2cb72988f6f51319f3e05482a0b))
+
 ## [1.0.2](https://github.com/36node/mysql-backup/compare/v1.0.1...v1.0.2) (2025-08-01)
 
 
