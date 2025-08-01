@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.9](https://github.com/36node/mysql-backup/compare/v1.0.8...v1.0.9) (2025-08-01)
+
+
+### Bug Fixes
+
+* helm chart ([2a65c66](https://github.com/36node/mysql-backup/commit/2a65c66cb0f9a43fd4d3d01d010a6cb4b708ba40))
+
 ## [1.0.8](https://github.com/36node/mysql-backup/compare/v1.0.7...v1.0.8) (2025-08-01)
 
 
