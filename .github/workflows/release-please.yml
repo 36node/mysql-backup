@@ -1,0 +1,80 @@
+name: Release-please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: write-all
+
+env:
+  DOCKER_PATH: ./docker
+  DOCKER_IMAGE: 36node/mysql-backup
+  HARBOR_REPO: common
+  CHART_NAME: mysql-backup-chart
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          release-type: simple
+
+  docker-and-helm:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get version tag
+        id: get_tag
+        # needs.release-please.outputs.tag_name = v1.0.0
+        run: echo ::set-output name=VERSION::$(echo "${{ needs.release-please.outputs.tag_name }}" | cut -c 2-)
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.DOCKER_IMAGE }}
+          # steps.get_tag.outputs.VERSION = v1.0.0
+          tags: |
+            ${{ steps.get_tag.outputs.VERSION }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: "${{ secrets.DOCKERHUB_USERNAME }}"
+          password: "${{ secrets.DOCKERHUB_TOKEN }}"
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ env.DOCKER_PATH }}
+          push: true
+          # steps.meta.outputs.tags = xxx/xxx:v1.0.0
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Chart package and push
+        uses: appany/helm-oci-chart-releaser@v0.3.0
+        with:
+          name: ${{ env.CHART_NAME }}
+          repository: ${{ env.HARBOR_REPO }}
+          # v1.0.0 -> 1.0.0
+          tag: $(echo "${{ steps.get_tag.outputs.VERSION }}" | sed 's/v\([0-9.]*\).*/\1/')
+          path: helm-chart
+          registry: ${{ secrets.HARBOR_DOMAIN }}
+          registry_username: "${{ secrets.HARBOR_USERNAME }}"
+          registry_password: "${{ secrets.HARBOR_PASSWORD }}"
