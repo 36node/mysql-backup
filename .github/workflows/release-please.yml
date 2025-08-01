@@ -24,7 +24,7 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         id: release
         with:
           release-type: simple
@@ -39,14 +39,13 @@ jobs:
       - name: Get version tag
         id: get_tag
         # needs.release-please.outputs.tag_name = v1.0.0
-        run: echo ::set-output name=VERSION::$(echo "${{ needs.release-please.outputs.tag_name }}" | cut -c 2-)
+        run: echo "VERSION=$(echo "${{ needs.release-please.outputs.tag_name }}" | cut -c 2-)" >> $GITHUB_OUTPUT
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
             ${{ env.DOCKER_IMAGE }}
-          # steps.get_tag.outputs.VERSION = v1.0.0
           tags: |
             ${{ steps.get_tag.outputs.VERSION }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
