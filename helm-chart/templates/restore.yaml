@@ -48,7 +48,7 @@ spec:
             - name: "S3_PREFIX"
               value: {{ index .Values.storage.s3 "prefix" | quote }}
             {{- end }}
-            {{- $env := .Values.backup.env }}
+            {{- $env := .Values.restore.env }}
             {{- range $key := $env | keys | sortAlpha }}
             - name: "{{ $key }}"
               value: "{{ index $env $key }}"
