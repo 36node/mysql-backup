@@ -63,7 +63,7 @@ jobs:
         with:
           context: ${{ env.DOCKER_PATH }}
           push: true
-          # steps.meta.outputs.tags = xxx/xxx:v1.0.0
+          # steps.meta.outputs.tags = xxx/xxx:1.0.0
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Chart package and push
@@ -71,8 +71,7 @@ jobs:
         with:
           name: ${{ env.CHART_NAME }}
           repository: ${{ env.HARBOR_REPO }}
-          # v1.0.0 -> 1.0.0
-          tag: $(echo "${{ steps.get_tag.outputs.VERSION }}" | sed 's/v\([0-9.]*\).*/\1/')
+          tag: ${{ steps.get_tag.outputs.VERSION }}
           path: helm-chart
           registry: ${{ secrets.HARBOR_DOMAIN }}
           registry_username: "${{ secrets.HARBOR_USERNAME }}"
