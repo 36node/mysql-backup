@@ -213,9 +213,7 @@ def upload_s3(prefix):
     )
 
     # 上传备份文件
-    file_name = (
-        f"{prefix}{date}.tar.gz.crypt" if backup_pwd else f"{prefix}{date}.tar.gz"
-    )
+    file_name = f"{prefix}{date}.sql.crypt" if backup_pwd else f"{prefix}{date}.sql"
     upload_path = f"{s3_prefix}/{file_name}" if s3_prefix else file_name
     client.upload_file(f"{backup_path}/{file_name}", s3_bucket, upload_path)
 
@@ -227,7 +225,7 @@ def upload_s3(prefix):
 
         file_prefix = f"{list_prefix}{prefix}"
         # 构造正则表达式
-        regex_pattern = f"^{re.escape(file_prefix)}(\\d{{14}})\\.tar\\.gz(\\.crypt)?$"
+        regex_pattern = f"^{re.escape(file_prefix)}(\\d{{14}})\\.sql(\\.crypt)?$"
         compiled_regex = re.compile(regex_pattern)
         keys = [
             object["Key"] for object in objects if compiled_regex.match(object["Key"])
@@ -252,7 +250,9 @@ try:
     if not os.path.exists(backup_path):
         os.makedirs(backup_path)
 
-    final_prefix = calculate_file_prefix(mysql_dbs, mysql_tables,mysql_exclude_tables, file_prefix)
+    final_prefix = calculate_file_prefix(
+        mysql_dbs, mysql_tables, mysql_exclude_tables, file_prefix
+    )
     print("final_prefix: ", final_prefix)
 
     # 1. 按要求备份数据，并保存到指定路径
