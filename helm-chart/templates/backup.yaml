@@ -1,0 +1,85 @@
+{{- if .Values.backup.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.backup.name }}
+  labels:
+    {{- include "mysql-backup.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backup
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          {{- with .Values.backup.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels:
+            {{- include "mysql-backup.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: backup
+        spec:
+          {{- include "mysql-backup.images.pullSecrets" (dict "images" (list .Values.backup.image) "global" .Values.global) | nindent 10 }}
+          restartPolicy: Never
+          containers:
+            - name: {{ .Values.backup.name }}
+              image: {{ include "mysql-backup.images.image" ( dict "imageRoot" .Values.backup.image "global" .Values.global ) }}
+              imagePullPolicy: {{ .Values.backup.image.pullPolicy | default .Values.global.imagePullPolicy }}
+              env:
+                {{- if eq .Values.storage.type "s3" }}
+                # Enabling S3-specific environment variables if storage type is S3
+                - name: "S3_ENABLE"
+                  value: "true"
+                - name: "S3_EP"
+                  value: {{ index .Values.storage.s3 "endpoint" | quote }}
+                - name: "S3_EP_VIRTUAL"
+                  value: {{ index .Values.storage.s3 "endpoint_virtual" | quote }}
+                - name: "S3_ACCESS_KEY"
+                  value: {{ index .Values.storage.s3 "access_key" | quote }}
+                - name: "S3_ACCESS_SECRET"
+                  value: {{ index .Values.storage.s3 "access_secret" | quote }}
+                - name: "S3_REGION"
+                  value: {{ index .Values.storage.s3 "region" | quote }}
+                - name: "S3_BUCKET"
+                  value: {{ index .Values.storage.s3 "bucket" | quote }}
+                - name: "S3_PREFIX"
+                  value: {{ index .Values.storage.s3 "prefix" | quote }}
+                {{- end }}
+                {{- $env := .Values.backup.env }}
+                {{- range $key := $env | keys | sortAlpha }}
+                - name: "{{ $key }}"
+                  value: "{{ index $env $key }}"
+                {{- end }}
+              {{- if not (eq .Values.storage.type "s3") }}
+              volumeMounts:
+                - mountPath: /backup
+                  name: dump-volume
+              {{- end }}
+          {{- if not (eq .Values.storage.type "s3") }}
+          volumes:
+            - name: dump-volume
+              {{- if .Values.storage.existingClaim }}
+              persistentVolumeClaim:
+                claimName: {{ .Values.storage.existingClaim }}
+              {{- else if .Values.storage.hostPath }}
+              hostPath:
+                path: {{ .Values.storage.hostPath }}
+                type: DirectoryOrCreate
+              {{- end }}
+          {{- end }}
+          {{- with .Values.backup.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

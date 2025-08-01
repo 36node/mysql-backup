@@ -1,0 +1,183 @@
+## @section Global parameters
+## Global Docker image parameters
+## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+##
+
+## @param global.imageRegistry Global Docker image registry
+## @param global.imagePullSecrets Global Docker registry secret names as an array
+## @param global.storageClass Global StorageClass for Persistent Volume(s)
+##
+global:
+  imageRegistry: ""
+  imagePullPolicy: IfNotPresent
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+
+## @section Common Parameters
+##
+
+nameOverride: ""
+fullnameOverride: ""
+
+## storage
+storage:
+  ## 三种类型选一种 hostPath/existingClaim/s3
+  type: "hostPath"
+  hostPath: "/backup"
+  existingClaim: ""
+
+  ## s3 配置
+  # s3:
+  #   endpoint: "https://minio-api.36node.com"
+  #   endpoint_virtual: true # 是否使用虚拟host，即把 bucker 作为域名
+  #   access_key: "xxxxxxxxxxxxx"
+  #   access_secret: "yyyyyyyyyyyy"
+  #   region: "cn"
+  #   bucket: "some"
+  #   prefix: "aaa-"
+  s3: {}
+
+## @section backup
+##
+backup:
+  name: backup
+  enabled: true
+
+  schedule: ""
+
+  ## env
+  env:
+    {}
+    ## e.g:
+    ## 必填
+    ## MYSQL_HOST:
+    ## MYSQL_USER:
+    ## MYSQL_PWD:
+    ## 选填
+    ## MYSQL_PORT:
+    ## MYSQL_DBS:
+    ## MYSQL_TABLES:
+    ## MYSQL_EXCLUDE_TABLES:
+    ## MYSQL_OTHER_CMD:
+    ## BACKUP_PATH:
+    ## BACKUP_SAVE_NUMS:
+    ## BACKUP_PWD:
+
+  image:
+    registry: ""
+    repository: 36node/mysql-backup
+    tag: latest
+    digest: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: ""
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+
+  resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  ## Configure resource requests and limits
+  nodeSelector: {}
+
+  ## Configure tolerations
+  tolerations: []
+
+  ## Configure affinity
+  affinity: {}
+
+  ## Configure pod annotations
+  podAnnotations: {}
+
+## @section restore
+##
+restore:
+  name: restore
+  enabled: true
+
+  ## env
+  env:
+    {}
+    ## e.g:
+    ## 必填
+    ## MYSQL_HOST:
+    ## MYSQL_USER:
+    ## MYSQL_PWD:
+    ## 选填
+    ## MYSQL_PORT:
+    ## MYSQL_DBS:
+    ## BACKUP_PATH:
+    ## BACKUP_SAVE_NUMS:
+    ## BACKUP_PWD:
+
+  image:
+    registry: ""
+    repository: 36node/mysql-backup
+    tag: latest
+    digest: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: ""
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+
+  resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  ## Configure resource requests and limits
+  nodeSelector: {}
+
+  ## Configure tolerations
+  tolerations: []
+
+  ## Configure affinity
+  affinity: {}
+
+  ## Configure pod annotations
+  podAnnotations: {}
