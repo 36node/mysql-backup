@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import re
 import sys
@@ -5,6 +6,7 @@ from datetime import datetime, timedelta
 import subprocess
 import boto3
 from botocore.client import Config
+import time
 
 # 数据库清理备份脚本
 # 1. 按要求备份数据，并保存到指定路径
@@ -106,7 +108,11 @@ s3_signature_version = (
 )
 
 # 计算当前日期，按照 年月日时分 格式
-date = (datetime.now() + timedelta(hours=8)).strftime("%Y%m%d%H%M%S")
+date = (
+    datetime.now() + timedelta(hours=8)
+    if not time.localtime().tm_gmtoff
+    else datetime.now()
+).strftime("%Y%m%d%H%M%S")
 
 
 def calculate_file_prefix(dbs=None, tables=None, exclude_tables=None, file_prefix=None):
@@ -203,7 +209,9 @@ def upload_s3(prefix):
         config_s3["addressing_style"] = "virtual"
 
     if s3_region and s3_signature_version:
-        config = Config(s3=config_s3, signature_version="s3", region_name=s3_region)
+        config = Config(
+            s3=config_s3, signature_version=s3_signature_version, region_name=s3_region
+        )
     elif s3_region:
         config = Config(s3=config_s3, region_name=s3_region)
     elif s3_signature_version:
