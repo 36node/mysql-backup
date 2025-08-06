@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/36node/mysql-backup/compare/v1.1.2...v1.1.3) (2025-08-06)
+
+
+### Bug Fixes
+
+* boto3 listObjects error ([5917d21](https://github.com/36node/mysql-backup/commit/5917d218f7f5dabccd96695d70f15e743a14826e))
+
 ## [1.1.2](https://github.com/36node/mysql-backup/compare/v1.1.1...v1.1.2) (2025-08-06)
 
 
