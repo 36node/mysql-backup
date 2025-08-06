@@ -39,6 +39,7 @@ storage:
   #   region: "cn"
   #   bucket: "some"
   #   prefix: "aaa-"
+  #   signature_version: "s3"
   s3: {}
 
 ## @section backup

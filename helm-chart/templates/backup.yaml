@@ -47,6 +47,8 @@ spec:
                   value: {{ index .Values.storage.s3 "bucket" | quote }}
                 - name: "S3_PREFIX"
                   value: {{ index .Values.storage.s3 "prefix" | quote }}
+                - name: "S3_SIGNATURE_VERSION"
+                  value: {{ index .Values.storage.s3 "signature_version" | quote }}
                 {{- end }}
                 {{- $env := .Values.backup.env }}
                 {{- range $key := $env | keys | sortAlpha }}
