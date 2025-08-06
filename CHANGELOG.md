@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/36node/mysql-backup/compare/v1.1.1...v1.1.2) (2025-08-06)
+
+
+### Bug Fixes
+
+* s3 delete ([0835084](https://github.com/36node/mysql-backup/commit/08350846b4fc3833b44bc639393f153e46fe63e4))
+
 ## [1.1.1](https://github.com/36node/mysql-backup/compare/v1.1.0...v1.1.1) (2025-08-06)
 
 
