@@ -71,7 +71,7 @@ backup:
   image:
     registry: ""
     repository: 36node/mysql-backup
-    tag: latest
+    tag: 1.1.2
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -139,7 +139,7 @@ restore:
   image:
     registry: ""
     repository: 36node/mysql-backup
-    tag: latest
+    tag: 1.1.2
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

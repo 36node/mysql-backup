@@ -254,10 +254,11 @@ def upload_s3(prefix):
 
         # 删除旧的备份文件
         if keys_to_remove:
-            client.delete_objects(
-                Bucket=s3_bucket,
-                Delete={"Objects": [{"Key": key} for key in keys_to_remove]},
-            )
+            for key in keys_to_remove:
+                client.delete_object(
+                    Bucket=s3_bucket,
+                    Key=key,
+                )
             print(f"Deleted s3 old backup files: {keys_to_remove}")
 
 
