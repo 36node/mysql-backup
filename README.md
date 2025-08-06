@@ -158,12 +158,13 @@ S3 支持使用虚拟域名作为 endpoint，即可以将 region 或者 bucket �
 
 - S3_ENABLE: 选填，是否启用 S3 存储备份，true 表示启用
 - S3_EP: 选填，S3 url，例如 https://minio-api.36node.com
-- S3_EP_VIRTUAL: 选填，是否启用虚拟 host url，true 表示启用
+- S3_EP_VIRTUAL: 选填，是否启用虚拟 host url，true 表示启用，使用阿里云 oss 时，需要设置为 true，minio 无需处理
 - S3_ACCESS_KEY: 选填，S3 access key
 - S3_ACCESS_SECRET: 选填，S3 access secret
 - S3_REGION: 选填，地区名
 - S3_BUCKET: 选填，要存储的桶名
 - S3_PREFIX: 选填，要存储的前缀
+- S3_SIGNATURE_VERSION: 选填，签名版本，使用阿里云 oss 时，需要设置为"s3"，minio 无需处理
 
 ### restore
 

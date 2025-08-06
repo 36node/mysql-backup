@@ -101,6 +101,9 @@ s3_access_secret = (
 s3_bucket = os.environ["S3_BUCKET"] if check_var("S3_BUCKET") else None
 s3_prefix = os.environ["S3_PREFIX"] if check_var("S3_PREFIX") else DEFAULT_S3_PREFIX
 s3_region = os.environ["S3_REGION"] if check_var("S3_REGION") else None
+s3_signature_version = (
+    os.environ["S3_SIGNATURE_VERSION"] if check_var("S3_SIGNATURE_VERSION") else None
+)
 
 # 计算当前日期，按照 年月日时分 格式
 date = (datetime.now() + timedelta(hours=8)).strftime("%Y%m%d%H%M%S")
@@ -199,8 +202,12 @@ def upload_s3(prefix):
     if s3_ep_virtual:
         config_s3["addressing_style"] = "virtual"
 
-    if s3_region:
+    if s3_region and s3_signature_version:
+        config = Config(s3=config_s3, signature_version="s3", region_name=s3_region)
+    elif s3_region:
         config = Config(s3=config_s3, region_name=s3_region)
+    elif s3_signature_version:
+        config = Config(s3=config_s3, signature_version=s3_signature_version)
     else:
         config = Config(s3=config_s3)
 
