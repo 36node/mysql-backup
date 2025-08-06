@@ -2,7 +2,11 @@ FROM mysql:8.0-debian
 LABEL org.opencontainers.image.authors="cc3630test@gmail.com"
 
 RUN apt-get update && \
- apt-get install -y zip psmisc python3 python3-boto3
+ apt-get install -y zip psmisc python3 python3-venv
+
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install boto3
 
 WORKDIR /app
 ADD . /app
